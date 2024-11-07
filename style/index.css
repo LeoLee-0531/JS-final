@@ -288,7 +288,7 @@ body {
 
 .banner {
   position: relative;
-  background-image: url("https://github.com/hexschool/js-training/blob/main/%E7%AC%AC%E4%B9%9D%E9%80%B1%E4%B8%BB%E7%B7%9A%E4%BB%BB%E5%8B%99%E5%9C%96%E5%BA%AB/3ewLAKn.png?raw=true");
+  background-image: url("/img/banner.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -628,6 +628,8 @@ body {
 }
 
 .productCard {
+  display: flex;
+  flex-direction: column;
   position: relative;
   margin-right: 2%;
   width: 23%;
@@ -641,7 +643,7 @@ body {
   object-fit: cover;
 }
 
-.productCard a {
+.productCard button {
   display: block;
   background-color: #000000;
   color: #ffffff;
@@ -650,13 +652,14 @@ body {
   border: none;
   margin-bottom: 8px;
   text-decoration: none;
+  cursor: pointer;
 }
 
-.productCard a:hover {
+.productCard button:hover {
   background-color: #301e5f;
 }
 
-.productCard a,
+.productCard button,
 .productCard h3 {
   font-size: 1.25rem;
 }
@@ -682,6 +685,13 @@ body {
   padding: 8px 24px;
 }
 
+.productContent {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .originPrice {
   font-size: 1.25rem;
 }
@@ -695,10 +705,21 @@ body {
   padding: 60px 0;
 }
 
+.emptyCart {
+  width: 700px;
+  margin: 0 auto;
+}
+
 .shoppingCart-table {
   margin: 0 auto;
   border-collapse: collapse;
   font-size: 1.25rem;
+}
+
+.shoppingCart-table .material-symbols-outlined {
+  display: block;
+  text-align: center;
+  font-size: 3rem;
 }
 
 .shoppingCart-table th,
@@ -750,6 +771,7 @@ body {
   padding: 10px;
   font-size: 2rem;
   color: #000000;
+  cursor: pointer;
 }
 
 .discardBtn a:hover {
@@ -766,6 +788,7 @@ body {
   border: 1.3px solid #000000;
   border-radius: 5px;
   font-size: 1.25rem;
+  cursor: pointer;
 }
 
 .discardAllBtn:hover {
@@ -931,3 +954,43 @@ body {
   display: none;
 }
 /*# sourceMappingURL=all.css.map */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.messegeModal {
+  display: none; /* 預設隱藏 */
+  position: fixed;
+  z-index: 3;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  border: 2px solid #301e5f;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.5s ease, fadeOut 0.5s ease 1s forwards;
+}
+
+.messegeModal-content {
+  text-align: center;
+}
