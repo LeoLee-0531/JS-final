@@ -10,8 +10,8 @@
 | ├─index.js
 | └─admin.js
 └─pages
-├─index.html
-└─admin.html
+  ├─index.html
+  └─admin.html
 ```
 
 ## 購物頁面 (index)
