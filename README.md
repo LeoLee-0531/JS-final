@@ -1,6 +1,7 @@
 # JS 直播班 - 期中試煉
 
-├─assets  
+```
+├─assets
 │ ├─css
 | | ├─index.css
 | | └─admin.css
@@ -11,6 +12,7 @@
 └─pages
 ├─index.html
 └─admin.html
+```
 
 ## 購物頁面 (index)
 
