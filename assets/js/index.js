@@ -1,33 +1,48 @@
-const api_path = "leo";
+const API_PATH = "leo";
+const API_PRODUCT_URL = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/products`;
+const API_CART_URL = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/carts`;
+const API_CUSTOMER_URL = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/orders`;
+
+let products = [];
+let cartDatas = [];
 
 // 初始化
 async function init() {
   await getProductData();
   await getCartData();
-
-  attachAddToCartEventListeners();
 }
 init();
 
 // 取得產品資料
-let productDatas = [];
 async function getProductData() {
   try {
-    const response = await axios.get(
-      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/products`
-    );
-    productDatas = response.data.products;
-    renderProduct(productDatas);
+    const response = await axios.get(`${API_PRODUCT_URL}`);
+    products = response.data.products;
+    renderProduct(products);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// 取得購物車資料
+async function getCartData() {
+  try {
+    const response = await axios
+      .get(`${API_CART_URL}`)
+      .then(function (response) {
+        cartDatas = response.data.carts;
+        renderCartData(cartDatas);
+      });
   } catch (error) {
     console.log(error);
   }
 }
 
 // 渲染產品
-function renderProduct(productDatas) {
+function renderProduct(products) {
   const productWrap = document.querySelector(".productWrap");
   let str = "";
-  productDatas.forEach((item) => {
+  products.forEach((item) => {
     str += `
     <li class="productCard">
       <h4 class="productType">新品</h4>
@@ -47,36 +62,7 @@ function renderProduct(productDatas) {
     `;
   });
   productWrap.innerHTML = str;
-}
-
-// 產品篩選
-const productSelect = document.querySelector(".productSelect");
-productSelect.addEventListener("change", function (e) {
-  if (e.target.value === "全部") {
-    renderProduct(productDatas);
-    return;
-  }
-  const filterDatas = productDatas.filter(
-    (item) => item.category === e.target.value
-  );
-  renderProduct(filterDatas);
-});
-
-// 取得購物車資料
-let cartDatas = [];
-async function getCartData() {
-  try {
-    const response = await axios
-      .get(
-        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts`
-      )
-      .then(function (response) {
-        cartDatas = response.data.carts;
-        renderCartData(cartDatas);
-      });
-  } catch (error) {
-    console.log(error);
-  }
+  attachAddToCartEventListeners();
 }
 
 // 渲染購物車
@@ -147,6 +133,19 @@ function renderCartData(cartDatas) {
   attachCartDiscardEventListener();
 }
 
+// 產品篩選
+const productSelect = document.querySelector(".productSelect");
+productSelect.addEventListener("change", function (e) {
+  if (e.target.value === "全部") {
+    renderProduct(products);
+    return;
+  }
+  const filterDatas = products.filter(
+    (item) => item.category === e.target.value
+  );
+  renderProduct(filterDatas);
+});
+
 // 新增至購物車
 function attachAddToCartEventListeners() {
   const addToCartBtns = document.querySelectorAll(".addToCartBtn");
@@ -166,15 +165,12 @@ function addCartData(productId) {
 
   try {
     axios
-      .post(
-        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts`,
-        {
-          data: {
-            productId: `${productId}`,
-            quantity: productQuantity,
-          },
-        }
-      )
+      .post(`${API_CART_URL}`, {
+        data: {
+          productId: `${productId}`,
+          quantity: productQuantity,
+        },
+      })
       .then((e) => {
         const messege = "已加入購物車";
         showMessege(messege);
@@ -205,15 +201,11 @@ function attachCartDiscardAllEventListener() {
 // 刪除所有購物車資料
 function deleteAllCartData() {
   try {
-    axios
-      .delete(
-        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts`
-      )
-      .then((e) => {
-        const messege = "已清空所有品項";
-        showMessege(messege);
-        getCartData();
-      });
+    axios.delete(`${API_CART_URL}`).then((e) => {
+      const messege = "已清空所有品項";
+      showMessege(messege);
+      getCartData();
+    });
   } catch (error) {
     console.log(error);
   }
@@ -233,15 +225,11 @@ function attachCartDiscardEventListener() {
 
 function deleteCartData(cartId) {
   try {
-    axios
-      .delete(
-        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts/${cartId}`
-      )
-      .then((e) => {
-        const messege = "已刪除一個商品";
-        showMessege(messege);
-        getCartData();
-      });
+    axios.delete(`${API_CART_URL}/${cartId}`).then((e) => {
+      const messege = "已刪除一個商品";
+      showMessege(messege);
+      getCartData();
+    });
   } catch (error) {
     console.log(error);
   }
@@ -294,7 +282,7 @@ function createOrderData(userData) {
   try {
     axios
       .post(
-        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders`,
+        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/orders`,
         userData
       )
       .then((e) => {

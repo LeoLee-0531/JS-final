@@ -1,27 +1,33 @@
-const api_path = "leo";
-const token = "RY26ME8AShNqoCbbbZSvYuapzxJ3";
+const API_PATH = "leo";
+const TOKEN = "RY26ME8AShNqoCbbbZSvYuapzxJ3";
+const API_ORDER_URL = `https://livejs-api.hexschool.io/api/livejs/v1/admin/${API_PATH}/orders`;
 
+const chartColors = {
+  "Jordan 雙人床架／雙人加大": "#DDC4FF",
+  "Antony 雙人床架／雙人加大": "#9D7FEA",
+  "Antony 床邊桌": "#ECC4FF",
+  "Antony 遮光窗簾": "#7A5EC3",
+  "Louvre 雙人床架／雙人加大": "#A34DBB",
+  "Louvre 單人床架": "#874DBB",
+  "Charles 系列儲物組合": "#5434A7",
+  "Charles 雙人床架": "#6C4DBB",
+};
 let chartData = {
   bindto: "#chart", // HTML 元素綁定
   data: {
     type: "pie",
     columns: [],
-    colors: {
-      "Jordan 雙人床架／雙人加大": "#DDC4FF",
-      "Antony 雙人床架／雙人加大": "#9D7FEA",
-      "Antony 床邊桌": "#ECC4FF",
-      "Antony 遮光窗簾": "#7A5EC3",
-      "Louvre 雙人床架／雙人加大": "#A34DBB",
-      "Louvre 單人床架": "#874DBB",
-      "Charles 系列儲物組合": "#5434A7",
-      "Charles 雙人床架": "#6C4DBB",
-    },
+    colors: chartColors,
   },
 };
 
 // 初始化
-function init() {
-  getOrderData();
+async function init() {
+  try {
+    await getOrderData();
+  } catch (error) {
+    console.log(error);
+  }
 }
 init();
 
@@ -31,14 +37,11 @@ let orderData = [];
 function getOrderData() {
   try {
     axios
-      .get(
-        `https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}/orders`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      )
+      .get(`${API_ORDER_URL}`, {
+        headers: {
+          Authorization: TOKEN,
+        },
+      })
       .then((e) => {
         orderData = e.data.orders;
         renderOrderData(orderData);
@@ -241,14 +244,11 @@ function discardAll() {
 
   try {
     axios
-      .delete(
-        `https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}/orders`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      )
+      .delete(`${API_ORDER_URL}`, {
+        headers: {
+          Authorization: TOKEN,
+        },
+      })
       .then(() => {
         getOrderData();
         const messege = "已清空所有訂單！";
@@ -275,14 +275,11 @@ function delSingleOrder(e) {
   const orderId = e.target.id;
   try {
     axios
-      .delete(
-        `https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}/orders/${orderId}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      )
+      .delete(`${API_ORDER_URL}/${orderId}`, {
+        headers: {
+          Authorization: TOKEN,
+        },
+      })
       .then(() => {
         getOrderData();
         const messege = "已刪除此筆訂單！";
