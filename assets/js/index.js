@@ -6,44 +6,48 @@ const API_CUSTOMER_URL = `https://livejs-api.hexschool.io/api/livejs/v1/customer
 let products = [];
 let cartDatas = [];
 
-// 初始化
-async function init() {
-  await getProductData();
-  await getCartData();
-}
-init();
+window.addEventListener("load", function () {
+  document.querySelector(".loader").style.display = "none";
+  document.querySelector(".content").style.display = "block";
 
-// 取得產品資料
-async function getProductData() {
-  try {
-    const response = await axios.get(`${API_PRODUCT_URL}`);
-    products = response.data.products;
-    renderProduct(products);
-  } catch (error) {
-    console.log(error);
+  // 初始化
+  async function init() {
+    await getProductData();
+    await getCartData();
   }
-}
+  init();
 
-// 取得購物車資料
-async function getCartData() {
-  try {
-    const response = await axios
-      .get(`${API_CART_URL}`)
-      .then(function (response) {
-        cartDatas = response.data.carts;
-        renderCartData(cartDatas);
-      });
-  } catch (error) {
-    console.log(error);
+  // 取得產品資料
+  async function getProductData() {
+    try {
+      const response = await axios.get(`${API_PRODUCT_URL}`);
+      products = response.data.products;
+      renderProduct(products);
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
-// 渲染產品
-function renderProduct(products) {
-  const productWrap = document.querySelector(".productWrap");
-  let str = "";
-  products.forEach((item) => {
-    str += `
+  // 取得購物車資料
+  async function getCartData() {
+    try {
+      const response = await axios
+        .get(`${API_CART_URL}`)
+        .then(function (response) {
+          cartDatas = response.data.carts;
+          renderCartData(cartDatas);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // 渲染產品
+  function renderProduct(products) {
+    const productWrap = document.querySelector(".productWrap");
+    let str = "";
+    products.forEach((item) => {
+      str += `
     <li class="productCard">
       <h4 class="productType">新品</h4>
       <img
@@ -60,19 +64,19 @@ function renderProduct(products) {
       </div>
     </li>
     `;
-  });
-  productWrap.innerHTML = str;
-  attachAddToCartEventListeners();
-}
+    });
+    productWrap.innerHTML = str;
+    attachAddToCartEventListeners();
+  }
 
-// 渲染購物車
-function renderCartData(cartDatas) {
-  let str = "";
-  let totalPrice = 0;
-  const shoppingCartTable = document.querySelector(".shoppingCart-table");
+  // 渲染購物車
+  function renderCartData(cartDatas) {
+    let str = "";
+    let totalPrice = 0;
+    const shoppingCartTable = document.querySelector(".shoppingCart-table");
 
-  if (cartDatas.length === 0) {
-    str += `
+    if (cartDatas.length === 0) {
+      str += `
     <tr>
       <td colspan='5'><span class="material-symbols-outlined">shopping_cart</span></td>
     </tr>
@@ -80,11 +84,11 @@ function renderCartData(cartDatas) {
       <td colspan='5'>購物車是空的，去逛逛吧！</td>
     </tr>
     `;
-    shoppingCartTable.innerHTML = str;
-    return;
-  }
+      shoppingCartTable.innerHTML = str;
+      return;
+    }
 
-  const tableHead = `
+    const tableHead = `
   <tr>
     <th width="40%">品項</th>
     <th width="15%">單價</th>
@@ -92,11 +96,11 @@ function renderCartData(cartDatas) {
     <th width="15%">金額</th>
     <th width="15%"></th>
   </tr>`;
-  str += tableHead;
+    str += tableHead;
 
-  cartDatas.forEach((item) => {
-    totalPrice += item.product.price * item.quantity;
-    str += `
+    cartDatas.forEach((item) => {
+      totalPrice += item.product.price * item.quantity;
+      str += `
     <tr>
       <td>
         <div class="cardItem-title">
@@ -112,9 +116,9 @@ function renderCartData(cartDatas) {
       </td>
     </tr>
     `;
-  });
+    });
 
-  const tableFooter = `
+    const tableFooter = `
   <tr>
     <td>
       <button class="discardAllBtn">刪除所有品項</button>
@@ -127,184 +131,187 @@ function renderCartData(cartDatas) {
     <td>NT$${totalPrice.toLocaleString()}</td>
   </tr>
   `;
-  str += tableFooter;
-  shoppingCartTable.innerHTML = str;
-  attachCartDiscardAllEventListener();
-  attachCartDiscardEventListener();
-}
-
-// 產品篩選
-const productSelect = document.querySelector(".productSelect");
-productSelect.addEventListener("change", function (e) {
-  if (e.target.value === "全部") {
-    renderProduct(products);
-    return;
+    str += tableFooter;
+    shoppingCartTable.innerHTML = str;
+    attachCartDiscardAllEventListener();
+    attachCartDiscardEventListener();
   }
-  const filterDatas = products.filter(
-    (item) => item.category === e.target.value
-  );
-  renderProduct(filterDatas);
-});
 
-// 新增至購物車
-function attachAddToCartEventListeners() {
-  const addToCartBtns = document.querySelectorAll(".addToCartBtn");
-  addToCartBtns.forEach((btn) => {
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      const productId = e.target.id;
-      addCartData(productId);
-    });
+  // 產品篩選
+  const productSelect = document.querySelector(".productSelect");
+  productSelect.addEventListener("change", function (e) {
+    if (e.target.value === "全部") {
+      renderProduct(products);
+      return;
+    }
+    const filterDatas = products.filter(
+      (item) => item.category === e.target.value
+    );
+    renderProduct(filterDatas);
   });
-}
 
-// 新增購物車資料
-function addCartData(productId) {
-  let productQuantity = getCartProductQuantity(productId);
-  productQuantity++;
+  // 新增至購物車
+  function attachAddToCartEventListeners() {
+    const addToCartBtns = document.querySelectorAll(".addToCartBtn");
+    addToCartBtns.forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const productId = e.target.id;
+        addCartData(productId);
+      });
+    });
+  }
 
-  try {
-    axios
-      .post(`${API_CART_URL}`, {
-        data: {
-          productId: `${productId}`,
-          quantity: productQuantity,
-        },
-      })
-      .then((e) => {
-        const messege = "已加入購物車";
-        showMessege(messege);
+  // 新增購物車資料
+  function addCartData(productId) {
+    let productQuantity = getCartProductQuantity(productId);
+    productQuantity++;
+
+    try {
+      axios
+        .post(`${API_CART_URL}`, {
+          data: {
+            productId: `${productId}`,
+            quantity: productQuantity,
+          },
+        })
+        .then((e) => {
+          const messege = "已加入購物車";
+          showNotification(messege);
+          getCartData();
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // 取得購物車產品數量
+  function getCartProductQuantity(productId) {
+    const cartProductQuantity = cartDatas.find(
+      (item) => item.product.id === productId
+    )?.quantity;
+    return cartProductQuantity ? cartProductQuantity : 0;
+  }
+
+  // 清空購物車
+  function attachCartDiscardAllEventListener() {
+    const discardAllBtn = document.querySelector(".discardAllBtn");
+    discardAllBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      deleteAllCartData();
+    });
+  }
+
+  // 刪除所有購物車資料
+  function deleteAllCartData() {
+    try {
+      axios.delete(`${API_CART_URL}`).then((e) => {
+        const messege = "已清空所有品項";
+        showNotification(messege);
         getCartData();
       });
-  } catch (error) {
-    console.log(error);
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
-// 取得購物車產品數量
-function getCartProductQuantity(productId) {
-  const cartProductQuantity = cartDatas.find(
-    (item) => item.product.id === productId
-  )?.quantity;
-  return cartProductQuantity ? cartProductQuantity : 0;
-}
+  // 刪除單筆購物車資料
+  function attachCartDiscardEventListener() {
+    const discardBtns = document.querySelectorAll(".discardBtn");
+    discardBtns.forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const cartId = e.target.id;
+        deleteCartData(cartId);
+      });
+    });
+  }
 
-// 清空購物車
-function attachCartDiscardAllEventListener() {
-  const discardAllBtn = document.querySelector(".discardAllBtn");
-  discardAllBtn.addEventListener("click", function (e) {
+  function deleteCartData(cartId) {
+    try {
+      axios.delete(`${API_CART_URL}/${cartId}`).then((e) => {
+        const messege = "已刪除一個商品";
+        showNotification(messege);
+        getCartData();
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // 驗證訂單資料
+  const orderForm = document.querySelector(".orderInfo-form");
+  orderForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    deleteAllCartData();
-  });
-}
+    if (cartDatas.length === 0) {
+      alert("購物車是空的，請先加入商品");
+      return;
+    }
 
-// 刪除所有購物車資料
-function deleteAllCartData() {
-  try {
-    axios.delete(`${API_CART_URL}`).then((e) => {
-      const messege = "已清空所有品項";
-      showMessege(messege);
-      getCartData();
-    });
-  } catch (error) {
-    console.log(error);
-  }
-}
+    const inputName = document.querySelector("#customerName");
+    const inputPhone = document.querySelector("#customerPhone");
+    const inputEmail = document.querySelector("#customerEmail");
+    const inputAddress = document.querySelector("#customerAddress");
+    const paymentMethod = document.querySelector("#tradeWay");
 
-// 刪除單筆購物車資料
-function attachCartDiscardEventListener() {
-  const discardBtns = document.querySelectorAll(".discardBtn");
-  discardBtns.forEach((btn) => {
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      const cartId = e.target.id;
-      deleteCartData(cartId);
-    });
-  });
-}
+    if (
+      inputName.value.trim() === "" ||
+      inputPhone.value.trim() === "" ||
+      inputEmail.value.trim() === "" ||
+      inputAddress.value.trim() === "" ||
+      paymentMethod.value.trim() === ""
+    ) {
+      alert("請填寫完整資料");
+      return;
+    }
 
-function deleteCartData(cartId) {
-  try {
-    axios.delete(`${API_CART_URL}/${cartId}`).then((e) => {
-      const messege = "已刪除一個商品";
-      showMessege(messege);
-      getCartData();
-    });
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-// 驗證訂單資料
-const orderForm = document.querySelector(".orderInfo-form");
-orderForm.addEventListener("submit", function (e) {
-  e.preventDefault();
-  if (cartDatas.length === 0) {
-    alert("購物車是空的，請先加入商品");
-    return;
-  }
-
-  const inputName = document.querySelector("#customerName");
-  const inputPhone = document.querySelector("#customerPhone");
-  const inputEmail = document.querySelector("#customerEmail");
-  const inputAddress = document.querySelector("#customerAddress");
-  const paymentMethod = document.querySelector("#tradeWay");
-
-  if (
-    inputName.value.trim() === "" ||
-    inputPhone.value.trim() === "" ||
-    inputEmail.value.trim() === "" ||
-    inputAddress.value.trim() === "" ||
-    paymentMethod.value.trim() === ""
-  ) {
-    alert("請填寫完整資料");
-    return;
-  }
-
-  const userData = {
-    data: {
-      user: {
-        name: inputName.value,
-        tel: inputPhone.value,
-        email: inputEmail.value,
-        address: inputAddress.value,
-        payment: paymentMethod.value,
+    const userData = {
+      data: {
+        user: {
+          name: inputName.value,
+          tel: inputPhone.value,
+          email: inputEmail.value,
+          address: inputAddress.value,
+          payment: paymentMethod.value,
+        },
       },
-    },
-  };
+    };
 
-  orderForm.reset();
-  createOrderData(userData);
-});
+    orderForm.reset();
+    createOrderData(userData);
+  });
 
-// 送出訂單資料
-function createOrderData(userData) {
-  try {
-    axios
-      .post(
-        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/orders`,
-        userData
-      )
-      .then((e) => {
-        const messege = "訂單已送出！";
-        showMessege(messege);
-        getCartData();
-      });
-  } catch (error) {
-    console.log(error);
+  // 送出訂單資料
+  function createOrderData(userData) {
+    try {
+      axios
+        .post(
+          `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/orders`,
+          userData
+        )
+        .then((e) => {
+          const messege = "訂單已送出！";
+          showNotification(messege);
+          getCartData();
+        });
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
-function showMessege(messege) {
-  var messegeModal = document.querySelector(".messegeModal");
-  var messegeModalContent = document.querySelector(".messegeModal-content");
-  let str = `
+  function showNotification(messege) {
+    var notificationModal = document.querySelector(".notificationModal");
+    var notificationModalContent = document.querySelector(
+      ".notificationModal-content"
+    );
+    let str = `
   <p>${messege}</p> 
   `;
-  messegeModalContent.innerHTML = str;
-  messegeModal.style.display = "block";
+    notificationModalContent.innerHTML = str;
+    notificationModal.style.display = "block";
 
-  setTimeout(() => {
-    messegeModal.style.display = "none";
-  }, 2000);
-}
+    setTimeout(() => {
+      notificationModal.style.display = "none";
+    }, 2000);
+  }
+});

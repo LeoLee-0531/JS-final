@@ -1,0 +1,10 @@
+.logo {
+  padding: 36px 0;
+  font-size: 1.5rem;
+}
+
+@media (max-width: 767px) {
+  .logo {
+    padding: 15px;
+  }
+}

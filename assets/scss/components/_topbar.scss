@@ -1,0 +1,112 @@
+.topBar {
+  border-bottom: 40px solid #000000;
+  margin-bottom: 30px;
+}
+
+.topBar .wrap {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1110px) {
+  .topBar .wrap {
+    padding: 0 15px;
+  }
+}
+
+.topBar a {
+  display: block;
+  text-decoration: none;
+  color: #000000;
+  font-size: 1.25rem;
+}
+
+.topBar a:hover {
+  color: #6a33f8;
+  -webkit-transform: scale(1.05);
+  transform: scale(1.05);
+}
+
+.topBar-menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  background-color: #ffffff;
+}
+
+.topBar-menu.openMenu {
+  max-height: 300px;
+}
+
+.topBar-menu a {
+  padding: 36px 24px;
+  background-color: #ffffff;
+}
+
+.topBar-menu a:hover {
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}
+
+.topBar-menu li:last-child a {
+  padding-right: 0;
+}
+
+@media (max-width: 767px) {
+  .topBar-menu {
+    position: absolute;
+    top: 61px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10;
+    max-height: 0;
+    overflow: hidden;
+    -webkit-transition: all 0.2s;
+    transition: all 0.2s;
+  }
+  .topBar-menu li {
+    width: 100%;
+  }
+  .topBar-menu a {
+    text-align: center;
+    padding: 15px;
+    font-size: 1rem;
+  }
+  .topBar-menu a:hover {
+    background-color: #6a33f8;
+    color: #ffffff;
+  }
+  .topBar-menu li:last-child a {
+    padding: 15px;
+  }
+}
+
+.topBar .menuToggle {
+  display: none;
+  cursor: pointer;
+}
+
+.menuToggle:hover {
+  color: #6a33ff;
+}
+
+@media (max-width: 767px) {
+  .topBar .menuToggle {
+    display: block;
+    font-size: 2rem;
+    padding: 15px;
+  }
+}

@@ -21,6 +21,11 @@ let chartData = {
   },
 };
 
+window.addEventListener("load", function () {
+  document.querySelector(".loader").style.display = "none";
+  document.querySelector(".content").style.display = "block";
+});
+
 // 初始化
 async function init() {
   try {
@@ -168,11 +173,11 @@ function loginCheck(e) {
   if (userName === admin.userName && password === admin.password) {
     isLogin = true;
     const messege = "登入成功！";
-    showMessege(messege);
+    showNotification(messege);
     loginSuccess();
   } else {
     const messege = "登入失敗！";
-    showMessege(messege);
+    showNotification(messege);
   }
 }
 
@@ -225,7 +230,7 @@ function logout() {
   loginBtn.innerHTML = str;
 
   const messege = "登出成功！";
-  showMessege(messege);
+  showNotification(messege);
 }
 
 const discardAllBtn = document.querySelector(".discardAllBtn");
@@ -252,7 +257,7 @@ function discardAll() {
       .then(() => {
         getOrderData();
         const messege = "已清空所有訂單！";
-        showMessege(messege);
+        showNotification(messege);
       });
   } catch (error) {
     console.log(error);
@@ -283,23 +288,25 @@ function delSingleOrder(e) {
       .then(() => {
         getOrderData();
         const messege = "已刪除此筆訂單！";
-        showMessege(messege);
+        showNotification(messege);
       });
   } catch (error) {
     console.log(error);
   }
 }
 
-function showMessege(messege) {
-  var messegeModal = document.querySelector(".messegeModal");
-  var messegeModalContent = document.querySelector(".messegeModal-content");
+function showNotification(messege) {
+  var notificationModal = document.querySelector(".notificationModal");
+  var notificationModalContent = document.querySelector(
+    ".notificationModal-content"
+  );
   let str = `
   <p>${messege}</p> 
   `;
-  messegeModalContent.innerHTML = str;
-  messegeModal.style.display = "block";
+  notificationModalContent.innerHTML = str;
+  notificationModal.style.display = "block";
 
   setTimeout(() => {
-    messegeModal.style.display = "none";
+    notificationModal.style.display = "none";
   }, 2000);
 }
