@@ -7,7 +7,8 @@
 @import "utils/mixins";
 
 // components
-@import "components/loader";
+@import "components/pageLoader";
+@import "components/actionLoader";
 @import "components/topbar";
 @import "components/logo";
 @import "components/discardBtn";

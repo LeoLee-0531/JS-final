@@ -13,17 +13,27 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/assets/js/index.js"></script>
-    <!-- <script src="/assets/js/main.js"></script> -->
+    <script type="module" src="/assets/js/index.js"></script>
+
     <title>Fianl</title>
   </head>
   <body>
-    <!-- Loading 畫面 -->
-    <div class="loader">
+    <!-- Page Loading -->
+    <div class="pageLoader">
       <div class="spinner"></div>
     </div>
 
-    <div class="content">
+    <!-- Action Loading -->
+    <div class="actionLoader">
+      <div class="box">
+        <div class="spinner"></div>
+        <div class="text">
+          <p>處理中...</p>
+        </div>
+      </div>
+    </div>
+
+    <main>
       <nav class="topBar">
         <div class="wrap">
           <h1><a href="#" class="logo">WOWOROOM</a></h1>
@@ -463,7 +473,7 @@
           <!-- <p>訊息測試</p> -->
         </div>
       </section>
-    </div>
+    </main>
 
     <!-- 預設 JS，請同學不要修改此處 -->
     <script>

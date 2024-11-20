@@ -1,14 +1,25 @@
+import { showNotification } from "./notification.js";
+import { initLoading, toggleLoading } from "./loader.js";
+
 const API_PATH = "leo";
-const API_PRODUCT_URL = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/products`;
-const API_CART_URL = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/carts`;
-const API_CUSTOMER_URL = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/orders`;
+const API_BASE_URL = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}`;
+const API_PRODUCT_URL = `${API_BASE_URL}/products`;
+const API_CART_URL = `${API_BASE_URL}/carts`;
+const API_CUSTOMER_URL = `${API_BASE_URL}/orders`;
 
 let products = [];
 let cartDatas = [];
 
+const messages = {
+  cartAdded: "已加入購物車",
+  cartCleared: "已清空所有品項",
+  itemRemoved: "已刪除一個商品",
+  orderSubmitted: "訂單已送出！",
+};
+
 window.addEventListener("load", function () {
-  document.querySelector(".loader").style.display = "none";
-  document.querySelector(".content").style.display = "block";
+  // 初始化載入中動畫
+  initLoading();
 
   // 初始化
   async function init() {
@@ -24,7 +35,7 @@ window.addEventListener("load", function () {
       products = response.data.products;
       renderProduct(products);
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   }
 
@@ -38,7 +49,7 @@ window.addEventListener("load", function () {
           renderCartData(cartDatas);
         });
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   }
 
@@ -48,22 +59,22 @@ window.addEventListener("load", function () {
     let str = "";
     products.forEach((item) => {
       str += `
-    <li class="productCard">
-      <h4 class="productType">新品</h4>
-      <img
-        src="${item.images}"
-        alt=""
-      />
-      <button id="${item.id}" class="addToCartBtn">加入購物車</button>
-      <div class="productContent">
-        <h3>${item.title}</h3>
-        <div class="productPrice">
-          <del class="originPrice">NT$${item.origin_price.toLocaleString()}</del>
-          <p class="nowPrice">NT$${item.price.toLocaleString()}</p>
+      <li class="productCard">
+        <h4 class="productType">新品</h4>
+        <img
+          src="${item.images}"
+          alt=""
+        />
+        <button id="${item.id}" class="addToCartBtn">加入購物車</button>
+        <div class="productContent">
+          <h3>${item.title}</h3>
+          <div class="productPrice">
+            <del class="originPrice">NT$${item.origin_price.toLocaleString()}</del>
+            <p class="nowPrice">NT$${item.price.toLocaleString()}</p>
+          </div>
         </div>
-      </div>
-    </li>
-    `;
+      </li>
+      `;
     });
     productWrap.innerHTML = str;
     attachAddToCartEventListeners();
@@ -77,62 +88,65 @@ window.addEventListener("load", function () {
 
     if (cartDatas.length === 0) {
       str += `
-    <tr>
-      <td colspan='5'><span class="material-symbols-outlined">shopping_cart</span></td>
-    </tr>
-    <tr>
-      <td colspan='5'>購物車是空的，去逛逛吧！</td>
-    </tr>
-    `;
+      <tr>
+        <td colspan='5'><span class="material-symbols-outlined">shopping_cart</span></td>
+      </tr>
+      <tr>
+        <td colspan='5'>購物車是空的，去逛逛吧！</td>
+      </tr>
+      `;
       shoppingCartTable.innerHTML = str;
+      toggleLoading(false);
       return;
     }
 
     const tableHead = `
-  <tr>
-    <th width="40%">品項</th>
-    <th width="15%">單價</th>
-    <th width="15%">數量</th>
-    <th width="15%">金額</th>
-    <th width="15%"></th>
-  </tr>`;
+    <tr>
+      <th width="40%">品項</th>
+      <th width="15%">單價</th>
+      <th width="15%">數量</th>
+      <th width="15%">金額</th>
+      <th width="15%"></th>
+    </tr>`;
     str += tableHead;
 
-    cartDatas.forEach((item) => {
-      totalPrice += item.product.price * item.quantity;
-      str += `
-    <tr>
-      <td>
-        <div class="cardItem-title">
-          <img src="${item.product.images}" alt="" />
-          <p>${item.product.title}</p>
-        </div>
-      </td>
-      <td>NT$${item.product.price.toLocaleString()}</td>
-      <td>${item.quantity}</td>
-      <td>NT$${item.product.price.toLocaleString()}</td>
-      <td class="discardBtn">
-        <a class="material-symbols-outlined" id="${item.id}"> clear </a>
-      </td>
-    </tr>
-    `;
-    });
+    str += cartDatas
+      .map(
+        (item) => `
+        <tr>
+          <td>
+            <div class="cardItem-title">
+              <img src="${item.product.images}" alt="" />
+              <p>${item.product.title}</p>
+            </div>
+          </td>
+          <td>NT$${item.product.price.toLocaleString()}</td>
+          <td>${item.quantity}</td>
+          <td>NT$${item.product.price.toLocaleString()}</td>
+          <td class="discardBtn">
+            <a class="material-symbols-outlined" id="${item.id}"> clear </a>
+          </td>
+        </tr>
+      `
+      )
+      .join("");
 
     const tableFooter = `
-  <tr>
-    <td>
-      <button class="discardAllBtn">刪除所有品項</button>
-    </td>
-    <td></td>
-    <td></td>
-    <td>
-      <p>總金額</p>
-    </td>
-    <td>NT$${totalPrice.toLocaleString()}</td>
-  </tr>
-  `;
+    <tr>
+      <td>
+        <button class="discardAllBtn">刪除所有品項</button>
+      </td>
+      <td></td>
+      <td></td>
+      <td>
+        <p>總金額</p>
+      </td>
+      <td>NT$${totalPrice.toLocaleString()}</td>
+    </tr>
+    `;
     str += tableFooter;
     shoppingCartTable.innerHTML = str;
+    toggleLoading(false);
     attachCartDiscardAllEventListener();
     attachCartDiscardEventListener();
   }
@@ -157,61 +171,54 @@ window.addEventListener("load", function () {
       btn.addEventListener("click", function (e) {
         e.preventDefault();
         const productId = e.target.id;
+        toggleLoading(true);
         addCartData(productId);
       });
     });
   }
 
-  // 新增購物車資料
-  function addCartData(productId) {
+  async function addCartData(productId) {
     let productQuantity = getCartProductQuantity(productId);
     productQuantity++;
 
     try {
-      axios
-        .post(`${API_CART_URL}`, {
-          data: {
-            productId: `${productId}`,
-            quantity: productQuantity,
-          },
-        })
-        .then((e) => {
-          const messege = "已加入購物車";
-          showNotification(messege);
-          getCartData();
-        });
+      await axios.post(`${API_CART_URL}`, {
+        data: {
+          productId: `${productId}`,
+          quantity: productQuantity,
+        },
+      });
+      showNotification(messages.cartAdded);
+      getCartData();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   }
 
   // 取得購物車產品數量
   function getCartProductQuantity(productId) {
-    const cartProductQuantity = cartDatas.find(
-      (item) => item.product.id === productId
-    )?.quantity;
-    return cartProductQuantity ? cartProductQuantity : 0;
+    return (
+      cartDatas.find((item) => item.product.id === productId)?.quantity || 0
+    );
   }
 
-  // 清空購物車
+  // 清空購物車所有資料
   function attachCartDiscardAllEventListener() {
     const discardAllBtn = document.querySelector(".discardAllBtn");
     discardAllBtn.addEventListener("click", function (e) {
       e.preventDefault();
+      toggleLoading(true);
       deleteAllCartData();
     });
   }
 
-  // 刪除所有購物車資料
-  function deleteAllCartData() {
+  async function deleteAllCartData() {
     try {
-      axios.delete(`${API_CART_URL}`).then((e) => {
-        const messege = "已清空所有品項";
-        showNotification(messege);
-        getCartData();
-      });
+      await axios.delete(`${API_CART_URL}`);
+      showNotification(messages.cartCleared);
+      getCartData();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   }
 
@@ -222,20 +229,19 @@ window.addEventListener("load", function () {
       btn.addEventListener("click", function (e) {
         e.preventDefault();
         const cartId = e.target.id;
-        deleteCartData(cartId);
+        toggleLoading(true);
+        deleteSingleCartData(cartId);
       });
     });
   }
 
-  function deleteCartData(cartId) {
+  async function deleteSingleCartData(cartId) {
     try {
-      axios.delete(`${API_CART_URL}/${cartId}`).then((e) => {
-        const messege = "已刪除一個商品";
-        showNotification(messege);
-        getCartData();
-      });
+      await axios.delete(`${API_CART_URL}/${cartId}`);
+      showNotification(messages.itemRemoved);
+      getCartData();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   }
 
@@ -277,41 +283,24 @@ window.addEventListener("load", function () {
       },
     };
 
+    toggleLoading(true);
     orderForm.reset();
     createOrderData(userData);
   });
 
   // 送出訂單資料
-  function createOrderData(userData) {
+  async function createOrderData(userData) {
     try {
-      axios
-        .post(
-          `https://livejs-api.hexschool.io/api/livejs/v1/customer/${API_PATH}/orders`,
-          userData
-        )
-        .then((e) => {
-          const messege = "訂單已送出！";
-          showNotification(messege);
-          getCartData();
-        });
+      await axios.post(`${API_CUSTOMER_URL}`, userData);
+      showNotification(messages.orderSubmitted);
+      getCartData();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   }
 
-  function showNotification(messege) {
-    var notificationModal = document.querySelector(".notificationModal");
-    var notificationModalContent = document.querySelector(
-      ".notificationModal-content"
-    );
-    let str = `
-  <p>${messege}</p> 
-  `;
-    notificationModalContent.innerHTML = str;
-    notificationModal.style.display = "block";
-
-    setTimeout(() => {
-      notificationModal.style.display = "none";
-    }, 2000);
+  // 錯誤處理
+  function handleError(error) {
+    console.log("發生錯誤：", error);
   }
 });

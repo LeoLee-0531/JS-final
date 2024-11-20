@@ -13,14 +13,25 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
       rel="stylesheet"
     />
-    <script src="/assets/js/admin.js"></script>
+    <script type="module" src="/assets/js/admin.js"></script>
   </head>
   <body>
-    <div class="loader">
+    <!-- Page Loading -->
+    <div class="pageLoader">
       <div class="spinner"></div>
-      <p>載入中，請稍候...</p>
     </div>
-    <div class="content">
+
+    <!-- Action Loading -->
+    <div class="actionLoader">
+      <div class="box">
+        <div class="spinner"></div>
+        <div class="text">
+          <p>處理中...</p>
+        </div>
+      </div>
+    </div>
+
+    <main>
       <nav class="topBar">
         <div class="wrap">
           <h1><a href="#" class="logo">WOWOROOM</a></h1>
@@ -137,7 +148,7 @@
           <!-- <p>訊息測試</p> -->
         </div>
       </section>
-    </div>
+    </main>
 
     <!-- C3 D3 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.js"></script>

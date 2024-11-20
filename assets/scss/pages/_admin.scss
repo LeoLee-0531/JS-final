@@ -10,28 +10,6 @@
   align-items: center;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-}
-
 .loginModal-content {
   position: fixed;
   top: 50%;
@@ -166,6 +144,11 @@
   cursor: pointer;
 }
 
+.login-btn .user-avator {
+  font-size: 42px;
+  display: block;
+}
+
 .logoutModal {
   display: none; /* 預設隱藏 */
   position: absolute;
@@ -271,6 +254,7 @@
   padding: 10px;
   display: block;
   color: #0067ce;
+  text-align: center;
 }
 
 .orderTableWrap {
