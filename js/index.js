@@ -131,6 +131,11 @@ window.addEventListener("load", function () {
       )
       .join("");
 
+    totalPrice += cartDatas.reduce(
+      (acc, item) => acc + item.product.price * item.quantity,
+      0
+    );
+
     const tableFooter = `
     <tr>
       <td>
