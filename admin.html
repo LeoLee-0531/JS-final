@@ -188,6 +188,7 @@
 
       // 關閉登入彈跳視窗
       function closeLoginModal() {
+        var loginForm = document.querySelector(".login-form");
         var modalContent = document.querySelector(".loginModal-content");
         modalContent.classList.add("fade-out");
         modalContent.addEventListener("animationend", function hideModal() {
